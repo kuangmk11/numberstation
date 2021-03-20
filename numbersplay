@@ -1,0 +1,178 @@
+#!/bin/bash
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+DISPLAY=""
+volume=.15
+gainin=0.80
+gainout=0.88
+delay=3
+decay=0.4
+speed=1
+#set=morse
+#set=cognitronics
+#set=jane
+set=jane/H
+#set=google
+
+if test -f "$1"; then
+	text=$(cat "$1" | awk '{printf "%s.  ",$0} END {print ""}')  # | sed 's/\.\s\+\.\s\+/.  /g')
+elif [ -z "$1" ] ; then
+	text=$(cat "$DIR/text/colour-out-of-space.txt" | awk '{printf "%s.  ",$0} END {print ""}')  # | sed 's/\.\s\+\.\s\+/.  /g')
+
+else
+	text=$(echo "$1" | awk '{printf "%s.  ",$0} END {print ""}')  # | sed 's/\.\s\+\.\s\+/.  /g')
+fi
+
+text=$(echo "$text" | sed 's/0/zero /g')
+text=$(echo "$text" | sed 's/1/one /g')
+text=$(echo "$text" | sed 's/2/two /g')
+text=$(echo "$text" | sed 's/3/three /g')
+text=$(echo "$text" | sed 's/4/four /g')
+text=$(echo "$text" | sed 's/5/five /g')
+text=$(echo "$text" | sed 's/6/six /g')
+text=$(echo "$text" | sed 's/7/seven /g')
+text=$(echo "$text" | sed 's/8/eight /g')
+text=$(echo "$text" | sed 's/9/nine /g')
+text=$(echo "$text" | sed 's/  / /g')
+text=$(echo "$text" | sed 's/  / /g')
+text=$(echo "$text" | sed 's/  / /g')
+
+#echo "$text"
+#numbers=$(echo "$text" | php /etc/myscripts/numberstation/ct37c.php | sed 's/[[:alnum:]]/ /g')
+#numbers=$(echo "$text" | php /etc/myscripts/numberstation/ct37c.php | tr -cd '[[:alnum:]] ')
+
+numbers=$(echo "$text" | tr -cd '[[:alpha:]].,+-=: ' | php /etc/myscripts/numberstation/ct37c.php)
+echo "$numbers" | grep -o . > /tmp/numbers.txt
+
+
+counter=0
+while read -r line ; do
+	((counter++))
+	if [[ $line = "" ]]; then
+		sleep .01
+#		printf " "
+	else
+		sleep .01
+		printf "$line"
+	fi
+
+#	EFFECTS
+
+#	phaser gain-in gain-out delay decay speed [-s|-t]
+#	pitch [-q] shift [segment [search [overlap]]] 
+#	reverb [-w|--wet-only] [reverberance (50%) [HF-damping (50%) 
+#	reverse
+#	speed factor[c] 
+#	flanger [delay depth regen width speed shape phase interp] 
+#	filter [low]-[high] [window-len [beta]] 
+#	echos gain-in gain-out <delay decay> 
+#	echo gain-in gain-out <delay decay> 
+#	chorus gain-in gain-out <delay decay speed depth -s|-t> 
+#	bend [-f frame-rate(25)] [-o over-sample(16)] { delay,cents,duration } 
+#
+
+FX="echos $gainin $gainout $(( RANDOM % 256 )) 0.$(( RANDOM % 99 )) reverb  $(( RANDOM % 100 )) $(( RANDOM % 100 )) $(( RANDOM % 100 )) phaser $gainin $gainout $delay $decay $speed"
+
+
+#	play -q  --volume $volume "$DIR"/voices/$set/$line.wav echos $gainin $gainout $(( RANDOM % 256 )) 0.$(( RANDOM % 99 )) reverb  $(( RANDOM % 100 )) $(( RANDOM % 100 )) $(( RANDOM % 100 )) phaser $gainin $gainout $delay $decay $speed -s channels 2 >> /dev/null 2>&1
+	play -q  --volume $volume "$DIR"/voices/$set/$line.wav $FX -s channels 2 >> /dev/null 2>&1
+
+	if [ ! -z $_buffer ] ; then
+		line="$_buffer$line"
+		_buffer=""
+	fi
+	if [[ $line = "" ]] ; then
+		sleep .01
+#		printf " "
+	elif [ "$line" -lt "7" ] ; then
+		if [ $line = 1 ] ; then
+			printf '\bA'
+		elif [ $line = 2 ]; then
+			printf '\bE'
+		elif [ $line = 3 ]; then
+			printf '\bI'
+		elif [ $line = 4 ]; then
+			printf '\bN'
+		elif [ $line = 5 ]; then
+			printf '\bO'
+		elif [ $line = 6 ]; then
+			printf '\bT'
+		fi
+	elif [ "$line" -gt "69" ] ; then
+		if [ $line = 70 ]; then
+			printf '\b\bB'
+		elif [ $line = 71 ]; then
+			printf '\b\bC'
+		elif [ $line = 72 ]; then
+			printf '\b\bD'
+		elif [ $line = 73 ]; then
+			printf '\b\bF'
+		elif [ $line = 74 ]; then
+			printf '\b\bG'
+		elif [ $line = 75 ]; then
+			printf '\b\bH'
+		elif [ $line = 76 ]; then
+			printf '\b\bJ'
+		elif [ $line = 77 ]; then
+			printf '\b\bK'
+		elif [ $line = 78 ]; then
+			printf '\b\bL'
+		elif [ $line = 79 ] ; then
+			printf '\b\bM'
+		elif [ $line = 80 ]; then
+			printf '\b\bP'
+		elif [ $line = 81 ]; then
+			printf '\b\bQ'
+		elif [ $line = 82 ]; then
+			printf '\b\bR'
+		elif [ $line = 83 ]; then
+			printf '\b\bS'
+		elif [ $line = 84 ]; then
+			printf '\b\bU'
+		elif [ $line = 85 ]; then
+			printf '\b\bV'
+		elif [ $line = 86 ]; then
+			printf '\b\bW'
+		elif [ $line = 87 ]; then
+			printf '\b\bX'
+		elif [ $line = 88 ]; then
+			printf '\b\bY'
+		elif [ $line = 89 ]; then
+			printf '\b\bZ'
+		elif [ $line = 90 ]; then
+			printf '\b\bfig'
+		elif [ $line = 91 ]; then
+			printf '\b\b.'
+		elif [ $line = 92 ]; then
+			printf '\b\b:'
+		elif [ $line = 93 ]; then
+			printf '\b\b,'
+		elif [ $line = 94 ]; then
+			printf '\b\b"()"'
+		elif [ $line = 95 ]; then
+			printf '\b\b+'
+		elif [ $line = 96 ]; then
+			printf '\b\b-'
+		elif [ $line = 97 ]; then
+			printf '\b\b='
+		elif [ $line = 98 ]; then
+			printf '\b\breq'
+		elif [ $line = 99 ] ; then
+			printf '\b\b '
+		fi
+	else
+		_buffer=$line
+	fi
+	sleep .500
+
+done < /tmp/numbers.txt
+
+
+#signoff 000
+play -q --volume $volume "$DIR"/voices/$set/0.wav channels 2 >> /dev/null 2>&1
+play -q --volume $volume "$DIR"/voices/$set/.wav channels 2 >> /dev/null 2>&1
+play -q --volume $volume "$DIR"/voices/$set/0.wav channels 2 >> /dev/null 2>&1
+play -q --volume $volume "$DIR"/voices/$set/.wav channels 2 >> /dev/null 2>&1
+play -q --volume $volume "$DIR"/voices/$set/0.wav channels 2 >> /dev/null 2>&1
+
+echo "END TRANSMISSION"
+exit 0
